@@ -168,4 +168,4 @@ predict(log.mod9)
 par(mfrow = c(2,2))
 plot(log.mod9)
 anova(log.model1, log.mod, log.mod1, log.mod2, log.mod3, log.mod4, log.mod5, 
-      log.mod6, log.mod7, log.mod8, log.mod9)
+      log.mod6, log.mod7, log.mod8, log.mod9) #H_0 hypothesis is accepted
