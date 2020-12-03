@@ -76,3 +76,30 @@ mod <- all_permutations %>%
   purrr::pluck("mod", 1)
 
 # Pls slet mine kommentarer hvis i forstår koden. Det ser klamt ud (:
+#Code belonging to "vif_overblik.r"
+standres.mod <- rstandard(mod)
+qqnorm(standres.mod); qqline(standres.mod, col = "red")
+plot(predict(mod), standres.mod) #Trumpet shape, y is log-transformed
+mod1 <- lm(log(Deaths) ~ Cancer + Diabetes + GDP + Obesity + Pop.density + Smokers, data = my.data)
+res.mod1 <- rstandard(mod1)
+plot(predict(mod1), res.mod1) #No more trumpet shape 
+par(mfrow = c(3,3))
+plot(my.data$Pop.density, res.mod1)
+plot(my.data$GDP, res.mod1)
+plot(my.data$Diabetes, res.mod1)
+plot(my.data$Smokers, res.mod1)
+plot(my.data$Obesity, res.mod1)
+plot(my.data$Cancer, res.mod1) #Dependence between pop.density and the residuals, i.e. log-transform
+
+mod2 <- lm(log(Deaths) ~ log(Pop.density) + GDP + Diabetes + Smokers + Obesity + log(Cancer),
+           data = my.data)
+res.mod2 <- rstandard(mod2)
+plot(predict(mod2), res.mod2) #No trumpetshape 
+qqnorm(res.mod2); qqline(res.mod2, col = "red")
+par(mfrow = c(3,2))
+plot(log(my.data$Pop.density), res.mod2)
+plot(my.data$GDP, res.mod2)
+plot(my.data$Diabetes, res.mod2)
+plot(my.data$Smokers, res.mod2)
+plot(my.data$Obesity, res.mod2)
+plot(log(my.data$Cancer), res.mod1) #Dependence is no longer visible 
