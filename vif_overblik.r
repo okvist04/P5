@@ -1,13 +1,5 @@
 # Data ----------------------------------------------------------------------------------------
 library(magrittr)
-data <- tibble::tibble(
-  y = rnorm(100),
-  x1 = rnorm(100),
-  x2 = runif(100),
-  x3 = x1 - rnorm(100),
-  x4 = x2 + rnorm(100),
-  to_remove = rnorm(100)
-)
 
 # Funktion ------------------------------------------------------------------------------------
 # Nedenstående funktion tager en enkelt uevalueret model som input og konstruerer en tibble
@@ -37,7 +29,7 @@ summarize_model = function(unevaluated_model) {
 
 # Konstruktion af alle modeller ---------------------------------------------------------------
 # Modellen der indeholder alle forklarende variable
-global_model <- lm(y ~ . -to_remove , data = data, na.action = "na.fail")
+global_model <- lm(Deaths ~ . -Country -Deaths , data = my.data, na.action = "na.fail")
 
 # Tillader R at sprede komputation ud på flere kerner, for at forøge hastigheden.
 future::plan(future::multiprocess()) 
@@ -63,23 +55,24 @@ all_permutations %>%
   purrr::pluck("mod", 1)
 
 # Modeller der overholder at VIF er under en tolerance, og indeholder x2 men ikke x3
-tol <- 1.1
+tol <- 5
 all_permutations %>%
-  dplyr::filter(max_vif < tol, x2, !x3 )
+  dplyr::filter(max_vif < tol )
 
 # Modellerne med flest parametre, der stadig overholder VIF tolerancen. 
 all_permutations %>%
   dplyr::filter(
     max_vif < tol,
-    which.max(n_params)
+    n_params == max(n_params)
   )
 
 # glimpse() funktionen fra dplyr kan være brugbar til at se jeres tibble med mange variable.
-all_permutations %>%
+mod <- all_permutations %>%
   dplyr::filter(
     max_vif < tol,
-    which.max(n_params)
-  ) %>%
-  dplyr::glimpse()
+    n_params == max(n_params)
+    ) %>%
+  dplyr::filter(max_vif == min(max_vif)) %>%
+  purrr::pluck("mod", 1)
 
 # Pls slet mine kommentarer hvis i forstår koden. Det ser klamt ud (:
