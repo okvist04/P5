@@ -1,5 +1,5 @@
 library(readxl)
-my.data <- read_excel("~/Desktop/P5/my.data.xlsx")
+my.data <- read_excel("my.data.xlsx")
 
 #Checking for VIF > 5, and removing one by one until all has VIF <= 5
 model <- lm(Deaths ~ . -Country -Deaths, data = my.data)
@@ -46,12 +46,14 @@ plot(stand.res6, main = "Residuals")
 yhat6 <- predict(model6) #Negative values, tranform y
 plot(yhat6, stand.res6) #Trumpet shape, i.e. log-transform y
 
+#model where deaths is log-transformed
 log.model <- lm(log(Deaths) ~ . -Country -Deaths -CKD -`65_older` -`70_older` 
                 -Median_age -Organ_transplant -HDI, data = my.data)
 summary(log.model)
 log.res <- residuals(log.model)
 stand.logres <- rstandard(log.model)
 stud.logres <- rstudent(log.model)
+
 #Checking residual plot, and Q-Q plot
 par(mfrow = c(2,1))
 qqnorm(stand.logres); qqline(stand.logres, col = "red")
@@ -73,7 +75,7 @@ plot(my.data$Asthma, stand.logres)
 plot(my.data$Cancer, stand.logres)
 plot(my.data$Gini, stand.logres)
 
-#Population, pop.density, and cancer changes variance wrt. the x's, hence these are log-transformed 
+#Population, pop.density, and cancer changes depends on the residuals, log-transform of these 
 log.model1 <- lm(log(Deaths) ~ log(Population) + log(Pop.density) + log(Cancer) + GDP + Cardiovasc
                  + Diabetes + Smokers + COPD + Health_exp + Obesity + Asthma + Cancer + Gini,
                  data = my.data)
@@ -86,6 +88,7 @@ par(mfrow = c(2,1))
 qqnorm(stand.logres1); qqline(stand.logres1, col = "red")
 plot(predict(log.model1), stand.logres1)
 
+#Plots of residuals and explanatory variables 
 par(mfrow = c(3,4))
 plot(log(my.data$Population), stand.logres1)
 plot(log(my.data$Pop.density), stand.logres1)
