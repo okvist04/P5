@@ -38,7 +38,7 @@ future::plan(future::multiprocess())
 all_permutations <- MuMIn::dredge(
   global_model, 
   evaluate = FALSE, 
-  m.lim = c(2, ncol(data)) # Grænser for antallet af parametre
+  m.lim = c(2, ncol(my.data)) # Grænser for antallet af parametre
   ) %>%
   furrr::future_map_dfr(   # Benytter funktionen på alle elementer i listen lavet af dredge.
     .f = summarize_model,  # Hvert output bliver koblet samme i en tibble (_dfr = data.frame).

@@ -2,49 +2,32 @@ library(readxl)
 my.data <- read_excel("my.data.xlsx")
 
 #Checking for VIF > 5, and removing one by one until all has VIF <= 5
-model <- lm(Deaths ~ . -Country -Deaths, data = my.data)
-multi.col <- vif(model); multi.col
-max <- max(multi.col); max
+vifmodel <- lm(Deaths ~ . -Country -Deaths, data = my.data)
+all_vifs <- car::vif(vifmodel); all_vifs
+signif_all <- names(all_vifs)
 
-model1 <- lm(Deaths ~ . -Country -Deaths -CKD, data = my.data)
-multi.col1 <- vif(model1); multi.col1
-max1 <- max(multi.col1); max1
-
-model2 <- lm(Deaths ~ . -Country -Deaths -CKD -`65_older`, data = my.data)
-multi.col2 <- vif(model2); multi.col2
-max2 <- max(multi.col2); max2
-
-model3 <- lm(Deaths ~ . -Country -Deaths -CKD -`65_older` -`70_older`, data = my.data)
-multi.col3 <- vif(model3); multi.col3
-max3 <- max(multi.col3); max3
-
-model4 <- lm(Deaths ~ . -Country -Deaths -CKD -`65_older` -`70_older`-Median_age, data = my.data)
-multi.col4 <- vif(model4); multi.col4
-max4 <- max(multi.col4); max4
-
-model5 <- lm(Deaths ~ . -Country -Deaths -CKD -`65_older` -Organ_transplant 
-             -Median_age -`70_older`, data = my.data)
-multi.col5 <- vif(model5); multi.col5
-max5 <- max(multi.col5); max5
-
-model6 <- lm(Deaths ~ . -Country -Deaths -CKD -`65_older` -Organ_transplant 
-             -Median_age -`70_older` -HDI, data = my.data) 
-multi.col6 <- vif(model6); multi.col6
-max6 <- max(multi.col6); max6
-summary(model6)
-res6 <- residuals(model6)
-stand.res6 <- rstandard(model6)
-stud.res6 <- rstudent(model6)
+while(any(all_vifs > 5)){
+  var_with_max_vif <- names(which(all_vifs == max(all_vifs)))  # get the var with max vif
+  signif_all <- signif_all[!(signif_all) %in% var_with_max_vif]  # remove
+  myForm <- as.formula(paste("Deaths ~ ", paste (signif_all, collapse=" + "), sep=""))  # new formula
+  model3 <- lm(myForm, data=my.data)  # re-build model with new formula
+  all_vifs <- car::vif(selectedMod)
+}
+summary(model3)
+car::vif(model3)
+res3 <- residuals(model3)
+stand.res3 <- rstandard(model3)
+stud.res3 <- rstudent(model3)
 
 par(mfrow = c(2,2))
-qqnorm(res6); qqline(res6, col = "red")
-hist(res6, prob = TRUE, xlab = "Residuals"); 
-curve(dnorm(x, mean(res6), sd(res6)), add = TRUE, col = "green")
-boxplot(predict(model6), main = "Boxplot of Fitted Values")
-plot(stand.res6, main = "Residuals")
+qqnorm(res3); qqline(res3, col = "red")
+hist(res3, prob = TRUE, xlab = "Residuals"); 
+curve(dnorm(x, mean(res3), sd(res3)), add = TRUE, col = "green")
+boxplot(predict(model3), main = "Boxplot of Fitted Values")
+plot(stand.res3, main = "Residuals")
 
-yhat6 <- predict(model6) #Negative values, tranform y
-plot(yhat6, stand.res6) #Trumpet shape, i.e. log-transform y
+yhat3 <- predict(model3) #Negative values, tranform y
+plot(yhat3, stand.res3) #Trumpet shape, i.e. log-transform y
 
 #model where deaths is log-transformed
 log.model <- lm(log(Deaths) ~ . -Country -Deaths -CKD -`65_older` -`70_older` 
