@@ -22,11 +22,12 @@ multi.col5 <- vif(model5); multi.col5
 max3 <- max(multi.col5); max3
 
 model8 <- lm(Deaths ~ . -Country -Deaths -CKD -`65_older` -Organ_transplant 
-             -Median_age -`70_older` -HDI, data = my.data)
+             -Median_age -`70_older` -HDI, data = my.data) #Final big model 
 multi.col8 <- vif(model8); multi.col8
 info8 <- summary(model8); info8
 res8 <- residuals(model8)
 stand.res8 <- rstandard(model8)
+
 par(mfrow = c(2,2))
 qqnorm(res8); qqline(res8, col = "red")
 hist(res8, prob = TRUE, xlab = "Residuals"); 
@@ -34,17 +35,19 @@ curve(dnorm(x, mean(res8), sd(res8)), add = TRUE, col = "green")
 boxplot(predict(model8), main = "Boxplot of Fitted Values")
 plot(stand.res8, main = "Residuals")
 
-yhat8 <- predict(model8)
+yhat8 <- predict(model8) #Negative values, tranform y
 plot(yhat8, stand.res8) #Trumpet shape, i.e. log-transform y
 
 log.model <- lm(log(Deaths) ~ . -Country -Deaths -CKD -`65_older` -`70_older` 
                 -Median_age -Organ_transplant -HDI, data = my.data)
-info.log <- summary(log.model); info.log #Obesity p=0.9407
+summary(log.model)
 log.res <- residuals(log.model)
 stand.logres <- rstandard(log.model)
+
 par(mfrow = c(2,1))
 qqnorm(stand.logres); qqline(stand.logres, col = "red")
 plot(predict(log.model), stand.logres)
+
 par(mfrow = c(3,3))
 plot(my.data$Population, stand.logres)
 plot(my.data$Pop.density, stand.logres)
@@ -63,10 +66,13 @@ plot(my.data$Gini, stand.logres)
 log.model1 <- lm(log(Deaths) ~ log(Population) + log(Pop.density) + log(Cancer) + GDP + Cardiovasc
                  + Diabetes + Smokers + COPD + Health_exp + Obesity + Asthma + Cancer + Gini,
                  data = my.data)
-info.log1 <- summary(log.model1); info.log1
+summary(log.model1)
 stand.logres1 <- rstandard(log.model1)
+
+par(mfrow = c(2,1))
 qqnorm(stand.logres1); qqline(stand.logres1, col = "red")
 plot(predict(log.model1), stand.logres1)
+
 par(mfrow = c(3,4))
 plot(log(my.data$Population), stand.logres1)
 plot(log(my.data$Pop.density), stand.logres1)
@@ -91,10 +97,6 @@ hist(my.data$Deaths, prob = TRUE); curve(dnorm(x, mean(my.data$Deaths), sd(my.da
 qqnorm(log(my.data$Deaths)); qqline(log(my.data$Deaths), col = "red")
 qqnorm(my.data$Deaths); qqline(my.data$Deaths, col = "red")
 qqnorm(stand.logres1); qqline(stand.logres1, col = "red")
-
-#Evt brug død antal pr. 100.000 indbyggere, find egenværdier og egenvektorer for X^\TX, hvis en af dem
-#er 0, så er der mindst en der skal fjernes, forholdet mellem den største og mindste egeneværdi
-#standardiser alle x-variablerne
 
 plot(log.model1)
 
