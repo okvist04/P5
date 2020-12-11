@@ -11,12 +11,14 @@ qqnorm(stud.res); qqline(stud.res, col = "red")
 outlier <- which.max(stud.res); stud.res[outlier] #Outlier is no. 40 = 3.0404
 par(mfrow = c(2,2))
 plot(model)
+hatvalues(model)
 
 #Model defined without Peru, i.e. no. 40
 model1 <- lm(deaths_per ~. -Country -deaths_per -Population, data = my.data[c(-40),])
 stud.res1 <- rstudent(model1)
 par(mfrow = c(2,2))
 plot(model1)
+par(mfrow = c(1,1))
 plot(predict(model1), stud.res1)
 qqnorm(stud.res1); qqline(stud.res1, col = "red")
 outlier1 <- which.max(stud.res1); stud.res1[outlier1] #Outlier no. 6 = 3.1296
@@ -25,9 +27,11 @@ hatvalues(model1)
 #Model defined without Belgium, i.e. no. 6
 model2 <- lm(deaths_per ~. -Country -deaths_per -Population, data = my.data[c(-40,-6),])
 stud.res2 <- rstudent(model2)
+par(mfrow = c(1,1))
 plot(predict(model2), stud.res2)
 qqnorm(stud.res2); qqline(stud.res2, col = "red")
-outlier2 <- which.max(stud.res2); stud.res2[outlier2] #QQ-plot was better with Belgium than without
+outlier2 <- which.max(stud.res2); stud.res2[outlier2] #No more outliers 
+#QQ-plot was better with Belgium than without
 #Model1 is used.
 
 #Checking for VIF > 5, and removing one by one until all has VIF <= 5
@@ -68,18 +72,18 @@ summary(model3)
 
 #Plotting all explanatory variables against residuals, to see if some needs to be transformed
 par(mfrow = c(2,2))
-plot(my.data[c(-40),]$Pop.density, stand.res3)
-plot(my.data[c(-40),]$GDP, stand.res3)
-plot(my.data[c(-40),]$cardiovasc_per, stand.res3)
-plot(my.data[c(-40),]$diabetes_per, stand.res3)
-plot(my.data[c(-40),]$Smokers, stand.res3)
-plot(my.data[c(-40),]$COPD_per, stand.res3)
-plot(my.data[c(-40),]$CKD_per, stand.res3)
-plot(my.data[c(-40),]$health_exp, stand.res3)
-plot(my.data[c(-40),]$Obesity, stand.res3)
-plot(my.data[c(-40),]$organ_per, stand.res3)
-plot(my.data[c(-40),]$asthma_per, stand.res3)
-plot(my.data[c(-40),]$Gini, stand.res3)
+plot(my.data[c(-40),]$Pop.density, stand.res3, xlab = "Pop.density")
+plot(my.data[c(-40),]$GDP, stand.res3, xlab = "GDP")
+plot(my.data[c(-40),]$cardiovasc_per, stand.res3, xlab = "Cardiovasc")
+plot(my.data[c(-40),]$diabetes_per, stand.res3, xlab = "Diabetes")
+plot(my.data[c(-40),]$Smokers, stand.res3, xlab = "Smokers")
+plot(my.data[c(-40),]$COPD_per, stand.res3, xlab = "COPD")
+plot(my.data[c(-40),]$CKD_per, stand.res3, xlab = "CKD")
+plot(my.data[c(-40),]$health_exp, stand.res3, xlab = "Health_exp")
+plot(my.data[c(-40),]$Obesity, stand.res3, xlab = "Obesity")
+plot(my.data[c(-40),]$organ_per, stand.res3, xlab = "Organ_transp")
+plot(my.data[c(-40),]$asthma_per, stand.res3, xlab = "Asthma")
+plot(my.data[c(-40),]$Gini, stand.res3, xlab = "Gini")
 
 #Histograms with normal curve is plotted for deaths
 par(mfrow = c(1,1))
@@ -147,3 +151,24 @@ par(mfrow = c(2,2))
 plot(mod2)
 anova(model3, model4, model5, model6, model7, model8, model9, mod1, mod2) #H_0 hypothesis is accepted
 anova(model3, mod2)
+anova(lm(deaths_per~1, data = my.data[c(-40),]), mod2)
+anova(lm(deaths_per~1, data = my.data[c(-40),]), model3)
+anova(model4, model5, model6, model7, model8, model9, mod1, mod2)
+anova(model5, model6, model7, model8, model9, mod1, mod2)
+anova(model6, model7, model8, model9, mod1, mod2)
+anova(model7, model8, model9, mod1, mod2)
+anova(model8, model9, mod1, mod2)
+anova(model9, mod1, mod2)
+anova(mod1, mod2)
+
+anova(model7, mod2)
+
+summary(model3)$adj.r.squared
+summary(model4)$adj.r.squared
+summary(model5)$adj.r.squared
+summary(model6)$adj.r.squared
+summary(model7)$adj.r.squared
+summary(model8)$adj.r.squared
+summary(model9)$adj.r.squared
+summary(mod1)$adj.r.squared
+summary(mod2)$adj.r.squared
