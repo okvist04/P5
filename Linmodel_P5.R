@@ -147,11 +147,12 @@ summary(model10)$coefficients[,4][ten.p] #All has p-val < 0.05, i.e. this is the
 summary(model10)
 
 predict(model10) #Fitted values
+residuals(model10)
 par(mfrow = c(2,2))
 plot(model10)
 anova(model1, model2, model3, model4, model5, model6, model7, model8, model9,
       model10) #H_0 hypothesis is accepted
-anova(lm(deaths_per~1, data = my.data[c(-40),]), model1) #The null model vs. the full model 
+anova(lm(deaths_per~1, data = my.data[c(-40),]), model10) #The null model vs. the reduced model 
 
 #R^2 adjusted is extracted from each model, to compare these
 summary(model1)$adj.r.squared
