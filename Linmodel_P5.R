@@ -177,4 +177,16 @@ summary(model10)$adj.r.squared
 summary(model11)$adj.r.squared
 
 
-
+#X^T X egenværdier, kovariansmatricen for x'erne, egenværdi svarer til 0, linearkombination svarer til 0 - NOGO
+#for stor variation i egenværdierne, nogle meget små -> varianserne bliver kæmpe 
+iota <- c(rep(1,52))
+X <- cbind(iota, my.data[c(-40, -6),]$organ_per, my.data[c(-40, -6),]$Gini)
+hat <- t(X)%*%X
+eigen(hat)
+H <- X %*% solve(t(X) %*% X) %*% t(X)
+eigen(H)
+rankMatrix(hat)
+detect.lindep(hat)
+(summary(model01)$sigma)**2
+solve(t(X)%*%X)
+beta <- solve(t(X) %*% X) %*% t(X) %*% my.data[c(-40, -6),]$deaths_per; beta
