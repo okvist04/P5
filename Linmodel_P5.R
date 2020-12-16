@@ -159,8 +159,7 @@ plot(predict(model11), rstandard(model11))
 hist(rstandard(model11), prob = TRUE); curve(dnorm(x, mean(rstandard(model11)), 
                                                   sd(rstandard(model11))), add = TRUE, 
                                             col = "green")
-anova(model1, model2, model3, model4, model5, model6, model7, model8,
-      model9, model10, model11) #H_0 hypothesis is accepted
+anova(model1, model11) #H_0 hypothesis is accepted
 anova(lm(deaths_per~1, data = my.data[c(-6, -40),]), model11) #The null model vs. the reduced model 
 
 #R^2 adjusted is extracted from each model, to compare these
@@ -177,16 +176,4 @@ summary(model10)$adj.r.squared
 summary(model11)$adj.r.squared
 
 
-#X^T X egenværdier, kovariansmatricen for x'erne, egenværdi svarer til 0, linearkombination svarer til 0 - NOGO
-#for stor variation i egenværdierne, nogle meget små -> varianserne bliver kæmpe 
-iota <- c(rep(1,52))
-X <- cbind(iota, my.data[c(-40, -6),]$organ_per, my.data[c(-40, -6),]$Gini)
-hat <- t(X)%*%X
-eigen(hat)
-H <- X %*% solve(t(X) %*% X) %*% t(X)
-eigen(H)
-rankMatrix(hat)
-detect.lindep(hat)
-(summary(model01)$sigma)**2
-solve(t(X)%*%X)
-beta <- solve(t(X) %*% X) %*% t(X) %*% my.data[c(-40, -6),]$deaths_per; beta
+
